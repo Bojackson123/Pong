@@ -1,6 +1,8 @@
 import pygame, os
-from game import SCREEN_HEIGHT, SCREEN_WIDTH, FPS, WHITE, BLACK, STAGE, FONT, TITLE_FONT
+from game import SCREEN_HEIGHT, SCREEN_WIDTH, FPS, WHITE, BLACK, FONT, TITLE_FONT
 from game.button import Button
+from game.paddle import Paddle
+from game.game import Game
 
 pygame.init()
 pygame.display.set_caption("Pong")
@@ -55,37 +57,38 @@ def mainMenu():
     
 
 def play():
-    playerOneYPos = SCREEN_HEIGHT // 2 - 50
-    playerTwoYPos = SCREEN_HEIGHT // 2 - 50
+
+    playerOne = Paddle(SCREEN_HEIGHT // 2 - 50, 10, 90, SCREEN_WIDTH - 30)
+    playerTwo = Paddle(SCREEN_HEIGHT // 2 - 50, 10, 90, 40)
+    game = Game()
 
 
     while True:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.QUIT()
-        
+            
         # Render game
-        screen.fill(BLACK)
-        pygame.draw.rect(screen, WHITE, STAGE, 2, border_radius=20)
-        pygame.draw.line(screen, WHITE, (SCREEN_WIDTH // 2, 10), (SCREEN_WIDTH // 2, 589), 2)
+        game.draw_stage(screen)
+        game.draw_score(screen, FONT)
         
-        PLAYERONE = pygame.Rect(SCREEN_WIDTH - (SCREEN_WIDTH - 30), playerOneYPos, 10, 90)
-        PLAYERTWO = pygame.Rect(SCREEN_WIDTH - 40, playerTwoYPos, 10, 90)
-        pygame.draw.rect(screen, WHITE, PLAYERTWO)
-        pygame.draw.rect(screen, WHITE, PLAYERONE)
+        playerOne.draw(screen)
+        playerTwo.draw(screen)
         
+        # Player movement
         keys = pygame.key.get_pressed()
+        
         # Player One movement
-        if keys[pygame.K_LEFT] and playerOneYPos > 10:
-            playerOneYPos -= 10
-        if keys[pygame.K_RIGHT] and playerOneYPos < SCREEN_HEIGHT - 100:
-            playerOneYPos += 10
+        if keys[pygame.K_LEFT] and playerOne.y > 10:
+            playerOne.move_paddle(10, "UP")
+        if keys[pygame.K_RIGHT] and playerOne.y < SCREEN_HEIGHT - 100:
+            playerOne.move_paddle(10, "DOWN")
             
         # Player Two movement
-        if keys[pygame.K_UP] and playerTwoYPos > 10:
-            playerTwoYPos -= 10
-        if keys[pygame.K_DOWN] and playerTwoYPos < SCREEN_HEIGHT - 100:
-            playerTwoYPos += 10
+        if keys[pygame.K_UP] and playerTwo.y > 10:
+            playerTwo.move_paddle(10, "UP")
+        if keys[pygame.K_DOWN] and playerTwo.y < SCREEN_HEIGHT - 100:
+            playerTwo.move_paddle(10, "DOWN")
         
         pygame.display.flip()
         
